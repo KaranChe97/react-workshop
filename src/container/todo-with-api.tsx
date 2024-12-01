@@ -6,7 +6,7 @@ export type todoT = {
   task: string;
 };
 
-const baseUrl = "http://localhost:3001";
+const baseUrl =  import.meta.env.VITE_BACKEND_URL
 
 function TodoWithApi() {
   const [loading, setLoading] = useState(false);
@@ -87,8 +87,19 @@ function TodoWithApi() {
       .catch((err) => setError(err.message));
   };
 
-  const clearList = () => {
-    setTodos([]);
+  const clearList = async () => {
+    setLoading(true);
+    fetch(`${baseUrl}/todos`, {
+      method: "DELETE",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "success") {
+          getTodos();
+        }
+      })
+      .catch((err) => setError(err.message))
+   
   };
 
   const getTodos = async () => {
@@ -112,7 +123,7 @@ function TodoWithApi() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-12 flex flex-col items-center">
       <h1 className="text-slate-800 text-4xl font-bold mb-12  tracking-wider">
-      To-do List
+        To-do List
       </h1>
 
       {loading ? (
@@ -148,7 +159,7 @@ function TodoWithApi() {
                 </p>
               </div>
               <button
-              className="text-red-500"
+                className="text-red-500"
                 onClick={(e) => {
                   e.preventDefault();
                   deleteTodo(todo.id);

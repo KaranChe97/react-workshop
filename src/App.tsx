@@ -1,15 +1,11 @@
 import "./App.css";
 import "./index.css";
-// import TodoWithState from './container/todo-with-state';
-// import TodoWithStorage from './container/todo-with-storage';
-import TodoWithApi from "./container/todo-with-api";
+import Todo from "./todo";
 
 function App() {
   return (
     <>
-      {/* <TodoWithState /> */}
-      {/* <TodoWithStorage /> */}
-      <TodoWithApi />
+      <Todo />
     </>
   );
 }

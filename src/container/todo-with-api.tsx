@@ -6,7 +6,7 @@ export type todoT = {
   task: string;
 };
 
-const baseUrl =  import.meta.env.VITE_BACKEND_URL
+const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
 function TodoWithApi() {
   const [loading, setLoading] = useState(false);
@@ -71,36 +71,7 @@ function TodoWithApi() {
       });
   };
 
-  const deleteTodo = (id: number) => {
-    fetch(`${baseUrl}/todos/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === "success") {
-          getTodos();
-        }
-      })
-      .catch((err) => setError(err.message));
-  };
-
-  const clearList = async () => {
-    setLoading(true);
-    fetch(`${baseUrl}/todos`, {
-      method: "DELETE",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === "success") {
-          getTodos();
-        }
-      })
-      .catch((err) => setError(err.message))
-   
-  };
+  const clearList = async () => {};
 
   const getTodos = async () => {
     setLoading(true);
@@ -162,7 +133,6 @@ function TodoWithApi() {
                 className="text-red-500"
                 onClick={(e) => {
                   e.preventDefault();
-                  deleteTodo(todo.id);
                 }}
               >
                 Delete

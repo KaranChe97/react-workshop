@@ -6,7 +6,7 @@ export type todoT = {
   task: string;
 };
 
-const baseUrl = import.meta.env.VITE_BACKEND_URL;
+const baseUrl = "http://localhost:3001";
 
 function TodoWithApi() {
   const [loading, setLoading] = useState(false);
@@ -16,6 +16,8 @@ function TodoWithApi() {
   const [todos, setTodos] = useState<todoT[]>([]);
 
   const [newTodo, setNewTodo] = useState<string>("");
+
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const addTodo = async () => {
     if (!newTodo.trim()) {
@@ -71,7 +73,23 @@ function TodoWithApi() {
       });
   };
 
-  const clearList = async () => {};
+  const clearList = async () => {
+    fetch(`${baseUrl}/todos`, {
+      method: "DELETE",
+    })
+      .then(() => getTodos())
+      .catch((err) => setError(err.message));
+  };
+
+  const deleteTodo = async (id: number) => {
+    setDeletingId(id);
+    fetch(`${baseUrl}/todos/${id}`, {
+      method: "DELETE",
+    })
+      .then(() => getTodos())
+      .catch((err) => setError(err.message))
+      .finally(() => setDeletingId(null));
+  };
 
   const getTodos = async () => {
     setLoading(true);
@@ -82,7 +100,11 @@ function TodoWithApi() {
       },
     })
       .then((res) => res.json())
-      .then((data) => setTodos(data))
+      .then((data) => { 
+        if(data.error) {
+          throw new Error(data.error)
+        }
+        setTodos(data)})
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   };
@@ -107,7 +129,7 @@ function TodoWithApi() {
         </h1>
       ) : (
         <ol className="list-none p-0 w-full max-w-3xl">
-          {todos.map((todo) => (
+          {todos?.map((todo) => (
             <li
               key={todo.id}
               className="cursor-pointer flex justify-between items-center gap-4 bg-white p-5 rounded-xl mb-3 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
@@ -133,9 +155,10 @@ function TodoWithApi() {
                 className="text-red-500"
                 onClick={(e) => {
                   e.preventDefault();
+                  deleteTodo(todo.id);
                 }}
               >
-                Delete
+                {deletingId === todo.id ? "Deleting..." : "Delete"}
               </button>
             </li>
           ))}
